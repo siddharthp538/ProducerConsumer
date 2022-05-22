@@ -8,17 +8,21 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PCusingWaitNotify {
+
     static BlockingQueue<Integer> bq = new BlockingQueue<>(3);
     public static void main(String[] args) {
-        new Thread(new Producer()).start();
-        new Thread(new Consumer()).start();
+        new Thread(new Producer(bq)).start();
+        new Thread(new Consumer(bq)).start();
     }
 
     static class Producer implements Runnable{
-
+        BlockingQueue<Integer> bq;
+        Producer(BlockingQueue<Integer> bq){
+            this.bq = bq;
+        }
         @Override
         public void run() {
-            while(bq.q.size() != 3){
+            while(bq.q.size() < bq.maxSize){
                 bq.put(createItem());
             }
         }
@@ -31,6 +35,10 @@ public class PCusingWaitNotify {
     }
 
     static class Consumer implements Runnable{
+        BlockingQueue<Integer> bq;
+        Consumer(BlockingQueue<Integer> bq){
+            this.bq = bq;
+        }
         @Override
         public void run() {
             while (bq.q.size() > 0){
@@ -50,9 +58,9 @@ public class PCusingWaitNotify {
 class BlockingQueue<E>{
     Queue<E> q;
     int maxSize = 16;
-    private ReentrantLock lock = new ReentrantLock(true);
-    private Condition notEmpty = lock.newCondition();
-    private Condition notFull = lock.newCondition();
+    private final ReentrantLock lock = new ReentrantLock(true);
+    private final Condition notEmpty = lock.newCondition();
+    private final Condition notFull = lock.newCondition();
     BlockingQueue(int size){
         q = new LinkedList<>();
         this.maxSize = size;
