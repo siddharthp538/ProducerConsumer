@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class PCusingWaitNotify {
+public class PCusingLocks {
 
     static BlockingQueue<Integer> bq = new BlockingQueue<>(3);
     public static void main(String[] args) {
